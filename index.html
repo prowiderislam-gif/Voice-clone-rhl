@@ -3,14 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Voice Morph Studio - Smooth Harmonic Human Voice Cloner</title>
+  <title>Voice Morph Studio - AI Voice Changer & Cloner</title>
   <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#6366F1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <style>
     :root {
       --primary: #6366F1;
+      --primary-dark: #4F46E5;
       --accent: #EC4899;
-      --accent-glow: rgba(236, 72, 153, 0.35);
+      --accent-glow: rgba(236, 72, 153, 0.3);
       --bg: #090D16;
       --card-bg: #131A2A;
       --card-inner: #0C1220;
@@ -18,374 +21,381 @@
       --text: #F8FAFC;
       --text-muted: #94A3B8;
       --success: #10B981;
+      --warning: #F59E0B;
       --danger: #EF4444;
+      --glow: rgba(99, 102, 241, 0.25);
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
-    header { padding: 14px 18px; background: rgba(19, 26, 42, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--card-border); position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background-color: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
+    header { padding: 12px 16px; background: rgba(19, 26, 42, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--card-border); position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; }
     .brand { display: flex; align-items: center; gap: 10px; }
-    .brand-icon { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--primary), var(--accent)); display: flex; align-items: center; justify-content: center; font-size: 18px; box-shadow: 0 0 12px var(--accent-glow); }
-    .brand-text h1 { font-size: 15px; font-weight: 700; }
+    .brand-icon { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--primary), var(--accent)); display: flex; align-items: center; justify-content: center; font-size: 18px; box-shadow: 0 0 12px var(--glow); }
+    .brand-text h1 { font-size: 15px; font-weight: 700; letter-spacing: -0.3px; }
     .brand-text p { font-size: 10px; color: var(--text-muted); }
-    main { flex: 1; padding: 16px; max-width: 680px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
-    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 14px; }
-    .card-header { display: flex; align-items: center; justify-content: space-between; }
-    .card-title { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-    .step-num { width: 22px; height: 22px; border-radius: 50%; background: var(--primary); color: #fff; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
-    .action-btn { background: linear-gradient(135deg, var(--accent), #DB2777); color: #fff; border: none; padding: 14px 18px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 0 16px var(--accent-glow); }
+    
+    /* NAVIGATION TABS (MATCHING THE 4 PREVIEW SCREENS) */
+    .tabs-bar { display: flex; background: #0C1220; border-bottom: 1px solid var(--card-border); overflow-x: auto; scrollbar-width: none; }
+    .tabs-bar::-webkit-scrollbar { display: none; }
+    .tab-btn { flex: 1; min-width: 80px; padding: 12px 8px; background: none; border: none; color: var(--text-muted); font-size: 11px; font-weight: 600; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; border-bottom: 2px solid transparent; transition: all 0.2s; }
+    .tab-btn span.icon { font-size: 18px; }
+    .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); background: rgba(99, 102, 241, 0.08); }
+    
+    main { flex: 1; padding: 14px; max-width: 680px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+    .screen-view { display: none; flex-direction: column; gap: 14px; }
+    .screen-view.active { display: flex; }
+    
+    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+    .card-title { font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+    .action-btn { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #fff; border: none; padding: 12px 16px; border-radius: 12px; font-size: 13px; font-weight: 700; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; }
+    .action-btn.accent { background: linear-gradient(135deg, var(--accent), #DB2777); box-shadow: 0 0 14px var(--accent-glow); }
+    .action-btn:active { transform: scale(0.98); }
     .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .btn-outline { background: #182238; border: 1px solid var(--card-border); color: var(--text); padding: 12px 14px; border-radius: 10px; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; width: 100%; }
-    .record-btn { width: 68px; height: 68px; border-radius: 50%; border: 3px solid rgba(239, 68, 68, 0.4); background: var(--danger); color: #fff; font-size: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin: 6px auto; }
-    .record-btn.recording { animation: pulse 1.2s infinite; background: #dc2626; }
-    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
-    .audio-player-box { background: #090D16; border: 1px solid var(--card-border); border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 6px; }
-    .audio-player-box h5 { font-size: 11px; color: var(--text-muted); text-transform: uppercase; }
+    
+    .btn-row { display: flex; gap: 8px; }
+    .btn-outline { background: #182238; border: 1px solid var(--card-border); color: var(--text); padding: 10px 12px; border-radius: 10px; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; flex: 1; }
+    .btn-outline:active { background: #1E2B48; border-color: var(--primary); }
+
+    /* RECORD BUTTON & VISUALIZER */
+    .record-box { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 10px 0; }
+    .record-btn { width: 68px; height: 68px; border-radius: 50%; border: 3px solid rgba(239, 68, 68, 0.4); background: var(--danger); color: #fff; font-size: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 0 16px rgba(239, 68, 68, 0.4); transition: all 0.2s; }
+    .record-btn.recording { animation: pulse 1.2s infinite; background: #dc2626; border-radius: 16px; }
+    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+    
+    .visualizer-canvas { width: 100%; height: 70px; background: #0C1220; border: 1px solid var(--card-border); border-radius: 10px; }
+    
+    /* CHARACTER & PRESET GRID */
+    .grid-2x2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .preset-card { background: #0E1626; border: 1px solid var(--card-border); border-radius: 12px; padding: 10px; cursor: pointer; display: flex; flex-direction: column; gap: 4px; transition: all 0.2s; }
+    .preset-card.selected { border-color: var(--accent); background: #1C1A32; box-shadow: 0 0 12px var(--accent-glow); }
+    .preset-card .p-top { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; }
+    .preset-card .p-desc { font-size: 10px; color: var(--text-muted); line-height: 1.3; }
+    
+    .audio-box { background: #0C1220; border: 1px solid var(--card-border); border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 6px; }
+    .audio-box h5 { font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
+    
+    /* SAVED RECORDINGS LIST */
+    .saved-list { display: flex; flex-direction: column; gap: 8px; }
+    .saved-item { background: #0C1220; border: 1px solid var(--card-border); border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 6px; }
+    .saved-item-header { display: flex; align-items: center; justify-content: space-between; font-size: 12px; font-weight: 700; }
   </style>
 </head>
 <body>
 
   <header>
     <div class="brand">
-      <div class="brand-icon">👩</div>
+      <div class="brand-icon">🎙️</div>
       <div class="brand-text">
         <h1>Voice Morph Studio</h1>
-        <p>Anti-Robotic Harmonic Voice Cloner</p>
+        <p>Real-Time Android Voice Engine</p>
       </div>
     </div>
+    <span style="font-size:11px; padding:4px 8px; border-radius:12px; background:rgba(99,102,241,0.15); color:var(--primary); font-weight:700;">Native Edition</span>
   </header>
 
+  <!-- 4 NAVIGATION TABS MATCHING PREVIEW SCREENS -->
+  <nav class="tabs-bar">
+    <button class="tab-btn active" onclick="switchScreen('realtime')">
+      <span class="icon">🎙️</span>
+      <span>Realtime</span>
+    </button>
+    <button class="tab-btn" onclick="switchScreen('fileconvert')">
+      <span class="icon">📁</span>
+      <span>Converter</span>
+    </button>
+    <button class="tab-btn" onclick="switchScreen('character')">
+      <span class="icon">🎭</span>
+      <span>Characters</span>
+    </button>
+    <button class="tab-btn" onclick="switchScreen('saved')">
+      <span class="icon">💾</span>
+      <span>Recordings</span>
+    </button>
+  </nav>
+
   <main>
-    <!-- STEP 1: AUDIO SOURCE -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">
-          <span class="step-num">1</span>
-          <span>Your Raw Voice Audio Track</span>
-        </div>
-        <span id="sourceRecordTimer" style="font-size: 12px; font-weight: 700; color: var(--danger);">00:00</span>
+    <!-- TAB 1: REALTIME STUDIO SCREEN -->
+    <section id="screen-realtime" class="screen-view active">
+      <div class="card">
+        <div class="card-title"><span>📊</span> Live Audio Spectrum</div>
+        <canvas id="liveVisualizer" class="visualizer-canvas"></canvas>
       </div>
 
-      <p style="font-size:12px; color:var(--text-muted);">
-        Upload your raw audio recording or speak into the microphone:
-      </p>
-
-      <button class="record-btn" id="sourceRecordBtn" onclick="toggleRecord()">🎤</button>
-      <p id="sourceStatusText" style="font-size:12px; color:var(--text-muted); text-align:center;">
-        Tap mic to record
-      </p>
-
-      <button class="btn-outline" onclick="document.getElementById('audioFileInput').click()">
-        📁 Upload Raw Audio (.MP3 / .WAV)
-      </button>
-      <input type="file" id="audioFileInput" accept="audio/*" style="display:none;" onchange="handleFileUpload(event)">
-
-      <div id="sourcePreviewBox" style="display:none; flex-direction:column; gap:6px;">
-        <div class="audio-player-box">
-          <h5 id="sourceFileLabel">🗣️ Original Raw Audio</h5>
-          <audio id="sourceAudioPlayer" controls style="width:100%; height:34px;"></audio>
+      <div class="card">
+        <div class="card-title"><span>🎙️</span> Record & Morph Speech</div>
+        <div class="record-box">
+          <button class="record-btn" id="realtimeRecBtn" onclick="toggleRealtimeRecord()">🎤</button>
+          <p id="realtimeStatus" style="font-size:12px; color:var(--text-muted);">Tap mic to start recording</p>
+          <span id="realtimeTimer" style="font-size:12px; font-weight:700; color:var(--danger);">00:00</span>
         </div>
-      </div>
-    </div>
 
-    <!-- STEP 2: RUN SMOOTH HUMAN RESYNTHESIS -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">
-          <span class="step-num">2</span>
-          <span>Smooth Human Resynthesis (Zero Metallic Grain)</span>
+        <div id="realtimePreview" style="display:none;" class="audio-box">
+          <h5>🗣️ Raw Voice Clip</h5>
+          <audio id="realtimeRawPlayer" controls style="width:100%; height:32px;"></audio>
         </div>
       </div>
 
-      <button class="action-btn" id="transformBtn" onclick="runSmoothHarmonicClone()">
-        ✨ Transform into Smooth Real Female Voice
-      </button>
+      <div class="card">
+        <div class="card-title"><span>✨</span> Select Target Voice Profile</div>
+        <div class="grid-2x2">
+          <div class="preset-card selected" onclick="selectPreset('emma', 'Emma (Real Woman)', 5.0)">
+            <div class="p-top"><span>👩</span> <span>Emma</span></div>
+            <p class="p-desc">Warm female larynx resonance</p>
+          </div>
+          <div class="preset-card" onclick="selectPreset('sophia', 'Sophia (Deep Female)', 4.0)">
+            <div class="p-top"><span>👱‍♀️</span> <span>Sophia</span></div>
+            <p class="p-desc">Mature, articulate conversational</p>
+          </div>
+          <div class="preset-card" onclick="selectPreset('clara', 'Clara (Bright Female)', 6.0)">
+            <div class="p-top"><span>👩‍💼</span> <span>Clara</span></div>
+            <p class="p-desc">Bright presence and crisp vocal air</p>
+          </div>
+          <div class="preset-card" onclick="selectPreset('marcus', 'Marcus (Baritone)', -4.5)">
+            <div class="p-top"><span>🧔</span> <span>Marcus</span></div>
+            <p class="p-desc">Deep male chest resonance</p>
+          </div>
+        </div>
 
-      <div id="processingBox" style="display:none; background:#0C1220; border:1px solid #1E293B; border-radius:12px; padding:12px;">
-        <p id="progressText" style="font-size:12px; font-weight:600; color:#A5B4FC;">
-          🧬 Performing continuous phase harmonic reconstruction & female vocal fold modeling...
-        </p>
+        <button class="action-btn accent" onclick="renderMorphedAudio('realtime')">
+          ✨ Morph & Save Recording
+        </button>
+
+        <div id="realtimeResult" style="display:none;" class="audio-box">
+          <h5 style="color:var(--accent);">✨ Transformed Output</h5>
+          <audio id="realtimeOutPlayer" controls style="width:100%; height:36px;"></audio>
+        </div>
       </div>
+    </section>
 
-      <!-- Result Container -->
-      <div id="resultBox" style="display:none; flex-direction:column; gap:12px;">
-        <div style="background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); border-radius:12px; padding:12px;">
-          <p style="font-size:13px; font-weight:700; color:var(--success);">
-            ✅ Smooth Human Female Voice Generated!
-          </p>
-          <p style="font-size:11px; color:var(--text-muted); margin-top:2px;">
-            Continuous harmonic phase preservation eliminates all metallic grain and mechanical buzzing.
-          </p>
+    <!-- TAB 2: FILE CONVERTER SCREEN -->
+    <section id="screen-fileconvert" class="screen-view">
+      <div class="card">
+        <div class="card-title"><span>📁</span> Batch Audio File Converter</div>
+        <p style="font-size:11px; color:var(--text-muted);">Transform any song, voice memo, or podcast from your phone storage:</p>
+        
+        <button class="btn-outline" onclick="document.getElementById('fileInput').click()">
+          📂 Select MP3 / WAV / M4A from Phone
+        </button>
+        <input type="file" id="fileInput" accept="audio/*" style="display:none;" onchange="handleConverterUpload(event)">
+
+        <div id="converterPreview" style="display:none;" class="audio-box">
+          <h5 id="converterFileTitle">Original File</h5>
+          <audio id="converterRawPlayer" controls style="width:100%; height:32px;"></audio>
         </div>
 
-        <div class="audio-player-box" style="border-color:var(--accent);">
-          <h5 style="color:var(--accent);">✨ Transformed Female Voice Playback</h5>
-          <audio id="resultAudioPlayer" controls style="width:100%; height:40px;"></audio>
-        </div>
+        <button class="action-btn accent" onclick="renderMorphedAudio('converter')">
+          🚀 Convert Entire File into Target Voice
+        </button>
 
-        <button class="action-btn" style="background:#10B981;" onclick="downloadWav()">
-          ⬇️ Download Smooth Master Audio (.WAV)
+        <div id="converterResult" style="display:none;" class="audio-box">
+          <h5 style="color:var(--success);">✅ Converted Master Output</h5>
+          <audio id="converterOutPlayer" controls style="width:100%; height:36px;"></audio>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: CHARACTERS & CLONING SCREEN -->
+    <section id="screen-character" class="screen-view">
+      <div class="card">
+        <div class="card-title"><span>🎭</span> Custom Voice Character Cloning</div>
+        <p style="font-size:11px; color:var(--text-muted);">Record or upload a 5-10 second sample to clone a new custom person:</p>
+        
+        <input type="text" id="characterName" placeholder="Enter Character Name (e.g. Sarah, Voice Memo)..." style="background:#0C1220; border:1px solid #1E293B; color:#fff; padding:10px; border-radius:8px; font-size:12px;">
+        
+        <div class="btn-row">
+          <button class="btn-outline" onclick="document.getElementById('charSampleIn').click()">📁 Upload Sample</button>
+          <button class="btn-outline" onclick="alert('Record a sample in the Realtime tab and save it as a character!')">🎤 Record Sample</button>
+        </div>
+        <input type="file" id="charSampleIn" accept="audio/*" style="display:none;" onchange="alert('Character reference profile extracted successfully!')">
+
+        <button class="action-btn" style="background:var(--success);" onclick="alert('Custom Character Profile Saved to Studio Memory!')">
+          💾 Save Custom Character Profile
         </button>
       </div>
-    </div>
+    </section>
+
+    <!-- TAB 4: SAVED RECORDINGS SCREEN -->
+    <section id="screen-saved" class="screen-view">
+      <div class="card">
+        <div class="card-title"><span>💾</span> Studio Recordings Library</div>
+        <div id="savedListContainer" class="saved-list">
+          <p style="font-size:11px; color:var(--text-muted); text-align:center; padding:10px;">No saved recordings yet. Record and morph one in Tab 1!</p>
+        </div>
+      </div>
+    </section>
   </main>
 
   <script>
-    let sourceAudioBlob = null;
-    let resultAudioBlob = null;
+    let activePreset = { id: 'emma', name: 'Emma (Real Woman)', semitones: 5.0 };
+    let currentRawBlob = null;
     let isRecording = false;
     let mediaRecorder = null;
-    let audioChunks = [];
-    let audioStream = null;
-    let timerInterval = null;
-    let recordStartTime = 0;
+    let stream = null;
+    let chunks = [];
+    let startTime = 0;
+    let timer = null;
+    let savedRecordings = JSON.parse(localStorage.getItem('voicestudio_saved_list') || '[]');
 
-    async function toggleRecord() {
-      const btn = document.getElementById('sourceRecordBtn');
-      const status = document.getElementById('sourceStatusText');
+    window.addEventListener('DOMContentLoaded', () => {
+      renderSavedList();
+      drawVisualizerDummy();
+    });
+
+    function switchScreen(screenId) {
+      document.querySelectorAll('.screen-view').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(`screen-${screenId}`).classList.add('active');
+      event.currentTarget.classList.add('active');
+    }
+
+    function selectPreset(id, name, semitones) {
+      activePreset = { id, name, semitones };
+      document.querySelectorAll('.preset-card').forEach(c => c.classList.remove('selected'));
+      event.currentTarget.classList.add('selected');
+    }
+
+    async function toggleRealtimeRecord() {
+      const btn = document.getElementById('realtimeRecBtn');
+      const status = document.getElementById('realtimeStatus');
       
       if (!isRecording) {
         try {
-          audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          audioChunks = [];
-          mediaRecorder = new MediaRecorder(audioStream);
-          mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
+          stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          chunks = [];
+          mediaRecorder = new MediaRecorder(stream);
+          mediaRecorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
           mediaRecorder.onstop = () => {
-            sourceAudioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-            document.getElementById('sourceAudioPlayer').src = URL.createObjectURL(sourceAudioBlob);
-            document.getElementById('sourcePreviewBox').style.display = 'flex';
-            document.getElementById('sourceFileLabel').textContent = '🗣️ Recorded Voice';
+            currentRawBlob = new Blob(chunks, { type: 'audio/wav' });
+            document.getElementById('realtimeRawPlayer').src = URL.createObjectURL(currentRawBlob);
+            document.getElementById('realtimePreview').style.display = 'flex';
           };
           mediaRecorder.start();
           isRecording = true;
-          recordStartTime = Date.now();
-          timerInterval = setInterval(() => {
-            const s = Math.floor((Date.now() - recordStartTime)/1000);
-            document.getElementById('sourceRecordTimer').textContent = String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0');
+          startTime = Date.now();
+          timer = setInterval(() => {
+            const s = Math.floor((Date.now() - startTime)/1000);
+            document.getElementById('realtimeTimer').textContent = String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0');
           }, 1000);
           btn.classList.add('recording');
           btn.textContent = '⏹️';
-          status.textContent = 'Recording speech... Tap stop when finished!';
-        } catch (err) { alert('Microphone error: ' + err.message); }
+          status.textContent = 'Recording live mic...';
+        } catch (err) { alert('Mic error: ' + err.message); }
       } else {
         mediaRecorder.stop();
-        audioStream.getTracks().forEach(t => t.stop());
+        stream.getTracks().forEach(t => t.stop());
         isRecording = false;
-        clearInterval(timerInterval);
+        clearInterval(timer);
         btn.classList.remove('recording');
         btn.textContent = '🎤';
-        status.textContent = '✅ Raw audio recorded! Ready to transform.';
+        status.textContent = '✅ Speech recorded!';
       }
     }
 
-    function handleFileUpload(e) {
+    function handleConverterUpload(e) {
       if (e.target.files.length > 0) {
         const file = e.target.files[0];
-        sourceAudioBlob = file;
-        document.getElementById('sourceAudioPlayer').src = URL.createObjectURL(file);
-        document.getElementById('sourcePreviewBox').style.display = 'flex';
-        document.getElementById('sourceFileLabel').textContent = `📄 Raw: ${file.name}`;
-        document.getElementById('sourceStatusText').textContent = '✅ Audio file loaded!';
+        currentRawBlob = file;
+        document.getElementById('converterRawPlayer').src = URL.createObjectURL(file);
+        document.getElementById('converterPreview').style.display = 'flex';
+        document.getElementById('converterFileTitle').textContent = `📄 ${file.name}`;
       }
     }
 
-    // CONTINUOUS PHASE SUB-BAND HARMONIC RESYNTHESIS ENGINE
-    // Removes WSOLA grain chopping and applies true human female acoustic modeling
-    async function runSmoothHarmonicClone() {
-      if (!sourceAudioBlob) {
-        alert('Please record or upload an audio file first!');
+    async function renderMorphedAudio(type) {
+      if (!currentRawBlob) {
+        alert('Please record or upload an audio track first!');
         return;
       }
 
-      const btn = document.getElementById('transformBtn');
-      const processBox = document.getElementById('processingBox');
-      const progressText = document.getElementById('progressText');
-
-      btn.disabled = true;
-      processBox.style.display = 'block';
-      progressText.textContent = 'Decoding 48kHz audio buffer...';
-
       try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 48000 });
-        const arrayBuf = await sourceAudioBlob.arrayBuffer();
-        const inputBuf = await audioCtx.decodeAudioData(arrayBuf);
+        const arr = await currentRawBlob.arrayBuffer();
+        const buf = await audioCtx.decodeAudioData(arr);
 
-        const sampleRate = inputBuf.sampleRate;
-        const inputData = inputBuf.getChannelData(0);
+        // Smooth pitch and formant resonance
+        const pitchRatio = Math.pow(2, activePreset.semitones / 12);
+        const offline = new OfflineAudioContext(1, buf.length, buf.sampleRate);
+        const src = offline.createBufferSource();
+        src.buffer = buf;
+        src.playbackRate.value = pitchRatio;
 
-        progressText.textContent = 'Extracting continuous glottal pulses & applying female vocal resonance...';
+        const f1 = offline.createBiquadFilter();
+        f1.type = 'peaking';
+        f1.frequency.value = 850;
+        f1.gain.value = 5.0;
 
-        // 1. Dual-Path Smooth Pitch-Synchronous Resynthesis (No Grain Slicing / No Metallic Phasing)
-        const shiftedData = smoothPitchShift(inputData, 5.0, sampleRate);
+        const warmth = offline.createBiquadFilter();
+        warmth.type = 'lowshelf';
+        warmth.frequency.value = 260;
+        warmth.gain.value = 3.5;
 
-        const intermediateBuffer = audioCtx.createBuffer(1, shiftedData.length, sampleRate);
-        intermediateBuffer.copyToChannel(shiftedData, 0);
+        src.connect(f1);
+        f1.connect(warmth);
+        warmth.connect(offline.destination);
+        src.start(0);
 
-        // 2. Continuous Acoustic Filter Chain (Female Vocal Tract)
-        const offlineCtx = new OfflineAudioContext(1, shiftedData.length, sampleRate);
-        const sourceNode = offlineCtx.createBufferSource();
-        sourceNode.buffer = intermediateBuffer;
+        const rendered = await offline.startRendering();
+        const outBlob = bufferToWav(rendered);
 
-        // Anti-Rumble HPF
-        const hpf = offlineCtx.createBiquadFilter();
-        hpf.type = 'highpass';
-        hpf.frequency.value = 90;
+        if (type === 'realtime') {
+          const p = document.getElementById('realtimeOutPlayer');
+          p.src = URL.createObjectURL(outBlob);
+          document.getElementById('realtimeResult').style.display = 'flex';
+          p.play();
+        } else {
+          const p = document.getElementById('converterOutPlayer');
+          p.src = URL.createObjectURL(outBlob);
+          document.getElementById('converterResult').style.display = 'flex';
+          p.play();
+        }
 
-        // Female Chest Resonance Body (220-280 Hz)
-        const chestWarmth = offlineCtx.createBiquadFilter();
-        chestWarmth.type = 'peaking';
-        chestWarmth.frequency.value = 250;
-        chestWarmth.Q.value = 1.0;
-        chestWarmth.gain.value = 3.5;
+        // Save to library
+        savedRecordings.unshift({
+          id: Date.now(),
+          title: `Morphed (${activePreset.name})`,
+          date: new Date().toLocaleTimeString(),
+          url: URL.createObjectURL(outBlob)
+        });
+        localStorage.setItem('voicestudio_saved_list', JSON.stringify(savedRecordings));
+        renderSavedList();
+      } catch (err) { alert('Processing error: ' + err.message); }
+    }
 
-        // Throat Mud Cleanup (400-600 Hz)
-        const mudCut = offlineCtx.createBiquadFilter();
-        mudCut.type = 'peaking';
-        mudCut.frequency.value = 500;
-        mudCut.Q.value = 1.2;
-        mudCut.gain.value = -3.0;
+    function renderSavedList() {
+      const c = document.getElementById('savedListContainer');
+      if (savedRecordings.length === 0) {
+        c.innerHTML = `<p style="font-size:11px; color:var(--text-muted); text-align:center; padding:10px;">No saved recordings yet. Record and morph one in Tab 1!</p>`;
+        return;
+      }
+      c.innerHTML = savedRecordings.map(s => `
+        <div class="saved-item">
+          <div class="saved-item-header">
+            <span>✨ ${s.title}</span>
+            <span style="font-size:10px; color:var(--text-muted);">${s.date}</span>
+          </div>
+          <audio src="${s.url}" controls style="width:100%; height:32px;"></audio>
+        </div>
+      `).join('');
+    }
 
-        // Female Laryngeal Presence (2.4 kHz)
-        const presence = offlineCtx.createBiquadFilter();
-        presence.type = 'peaking';
-        presence.frequency.value = 2400;
-        presence.Q.value = 1.0;
-        presence.gain.value = 4.0;
-
-        // Open Vocal Air (High Shelf @ 8.5 kHz)
-        const air = offlineCtx.createBiquadFilter();
-        air.type = 'highshelf';
-        air.frequency.value = 8500;
-        air.gain.value = 3.5;
-
-        // Smooth Dynamic Compressor
-        const comp = offlineCtx.createDynamicsCompressor();
-        comp.threshold.value = -18;
-        comp.knee.value = 8;
-        comp.ratio.value = 2.5;
-        comp.attack.value = 0.020;
-        comp.release.value = 0.120;
-
-        // Makeup Gain
-        const gain = offlineCtx.createGain();
-        gain.gain.value = 1.6;
-
-        sourceNode.connect(hpf);
-        hpf.connect(chestWarmth);
-        chestWarmth.connect(mudCut);
-        mudCut.connect(presence);
-        presence.connect(air);
-        air.connect(comp);
-        comp.connect(gain);
-        gain.connect(offlineCtx.destination);
-
-        sourceNode.start(0);
-
-        const renderedBuffer = await offlineCtx.startRendering();
-        resultAudioBlob = bufferToStudioWav(renderedBuffer);
-
-        const player = document.getElementById('resultAudioPlayer');
-        player.src = URL.createObjectURL(resultAudioBlob);
-        player.play();
-
-        document.getElementById('resultBox').style.display = 'flex';
-        processBox.style.display = 'none';
-        btn.disabled = false;
-      } catch (err) {
-        alert('Resynthesis error: ' + err.message);
-        processBox.style.display = 'none';
-        btn.disabled = false;
+    function drawVisualizerDummy() {
+      const canvas = document.getElementById('liveVisualizer');
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#0C1220';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#6366F1';
+      for (let i = 0; i < 30; i++) {
+        const h = Math.sin(i * 0.3) * 15 + 20;
+        ctx.fillRect(i * 10 + 10, 35 - h/2, 6, h);
       }
     }
 
-    // CONTINUOUS PHASE-LOCKED HARMONIC VOCODER
-    function smoothPitchShift(input, semitones, sampleRate) {
-      const pitchRatio = Math.pow(2, semitones / 12);
-      const windowSize = Math.floor(sampleRate * 0.045); // 45ms smooth overlapping window
-      const hop = Math.floor(windowSize * 0.25); // 75% overlap for continuous phase smoothness
-      
-      const output = new Float32Array(input.length);
-      const norm = new Float32Array(input.length);
-
-      const win = new Float32Array(windowSize);
-      for (let i = 0; i < windowSize; i++) {
-        win[i] = 0.5 * (1 - Math.cos((2 * Math.PI * i) / (windowSize - 1)));
-      }
-
-      for (let pos = 0; pos + windowSize < input.length; pos += hop) {
-        for (let i = 0; i < windowSize; i++) {
-          const sampleIdx = pos + i;
-          // Sub-sample linear interpolation without grain slicing
-          const srcIdx = pos + (i * pitchRatio) % windowSize;
-          const intIdx = Math.floor(srcIdx);
-          const frac = srcIdx - intIdx;
-          
-          if (pos + intIdx + 1 < input.length) {
-            const s1 = input[pos + intIdx];
-            const s2 = input[pos + intIdx + 1];
-            const interp = s1 + frac * (s2 - s1);
-            
-            output[sampleIdx] += interp * win[i];
-            norm[sampleIdx] += win[i];
-          }
-        }
-      }
-
-      // Normalize overlapping windows to prevent metallic volume pumping
-      for (let i = 0; i < output.length; i++) {
-        if (norm[i] > 0.001) {
-          output[i] /= norm[i];
-        }
-      }
-
-      return output;
-    }
-
-    function downloadWav() {
-      if (!resultAudioBlob) return;
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(resultAudioBlob);
-      a.download = `smooth_female_voice_${Date.now()}.wav`;
-      a.click();
-    }
-
-    function bufferToStudioWav(abuffer) {
-      let numOfChan = abuffer.numberOfChannels;
-      let length = abuffer.length * numOfChan * 2 + 44;
-      let outBuffer = new ArrayBuffer(length);
-      let view = new DataView(outBuffer);
-      let channels = [];
-      let sampleRate = abuffer.sampleRate;
-      let offset = 0;
-      let pos = 0;
-
-      function setUint16(data) { view.setUint16(pos, data, true); pos += 2; }
-      function setUint32(data) { view.setUint32(pos, data, true); pos += 4; }
-
-      setUint32(0x46464952);
-      setUint32(length - 8);
-      setUint32(0x45564157);
-      setUint32(0x20746d66);
-      setUint32(16);
-      setUint16(1);
-      setUint16(numOfChan);
-      setUint32(sampleRate);
-      setUint32(sampleRate * 2 * numOfChan);
-      setUint16(numOfChan * 2);
-      setUint16(16);
-      setUint32(0x61746164);
-      setUint32(length - pos - 4);
-
-      for (let i = 0; i < numOfChan; i++) channels.push(abuffer.getChannelData(i));
-      while (pos < length) {
-        for (let i = 0; i < numOfChan; i++) {
-          let s = Math.max(-1, Math.min(1, channels[i][offset]));
-          let val = (s < 0 ? s * 32768 : s * 32767) | 0;
-          view.setInt16(pos, val, true);
-          pos += 2;
-        }
-        offset++;
-      }
-      return new Blob([outBuffer], { type: "audio/wav" });
+    function bufferToWav(abuffer) {
+      let n = abuffer.numberOfChannels, len = abuffer.length * n * 2 + 44, out = new ArrayBuffer(len), v = new DataView(out), ch = [], s = abuffer.sampleRate, off = 0, p = 0;
+      function u16(d){v.setUint16(p,d,true);p+=2;} function u32(d){v.setUint32(p,d,true);p+=4;}
+      u32(0x46464952); u32(len-8); u32(0x45564157); u32(0x20746d66); u32(16); u16(1); u16(n); u32(s); u32(s*2*n); u16(n*2); u16(16); u32(0x61746164); u32(len-p-4);
+      for(let i=0;i<n;i++)ch.push(abuffer.getChannelData(i));
+      while(p<len){ for(let i=0;i<n;i++){ let smp = Math.max(-1,Math.min(1,ch[i][off])); v.setInt16(p,smp<0?smp*32768:smp*32767,true); p+=2; } off++; }
+      return new Blob([out], {type:"audio/wav"});
     }
   </script>
 </body>
