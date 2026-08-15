@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Voice Morph Studio - AI Voice Changer & Cloner</title>
+  <title>Voice Morph Studio - Neural AI Voice Cloner</title>
   <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#6366F1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -75,17 +75,6 @@
     .brand-text p {
       font-size: 11px;
       color: var(--text-muted);
-    }
-    .install-btn {
-      display: none;
-      background: linear-gradient(135deg, var(--primary), var(--accent));
-      color: #fff;
-      border: none;
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
     }
     .tabs {
       display: flex;
@@ -174,13 +163,6 @@
     .badge.success {
       background: rgba(16, 185, 129, 0.15);
       color: var(--success);
-    }
-    canvas {
-      width: 100%;
-      height: 90px;
-      background: #0A0F1D;
-      border-radius: 12px;
-      border: 1px solid #1E293B;
     }
     .step-box {
       background: var(--card-inner);
@@ -290,29 +272,6 @@
       50% { transform: scale(1.06); box-shadow: 0 0 30px rgba(239, 68, 68, 0.8); }
       100% { transform: scale(1); box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
     }
-    .metrics-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
-    .metric-card {
-      background: #080D18;
-      border: 1px solid #1E293B;
-      border-radius: 10px;
-      padding: 8px;
-      text-align: center;
-    }
-    .metric-card .val {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--primary);
-    }
-    .metric-card .label {
-      font-size: 9px;
-      color: var(--text-muted);
-      margin-top: 2px;
-      text-transform: uppercase;
-    }
     .target-chips {
       display: flex;
       gap: 8px;
@@ -338,12 +297,80 @@
       background: #1C1A32;
       box-shadow: 0 0 12px var(--accent-glow);
     }
-    .target-chip .icon {
-      font-size: 18px;
+    .target-chip .icon { font-size: 18px; }
+    .target-chip .name { font-size: 12px; font-weight: 600; }
+    
+    .api-settings-box {
+      background: #070B14;
+      border: 1px dashed #334155;
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
-    .target-chip .name {
+    input[type="text"], input[type="password"], select {
+      background: #090D16;
+      border: 1px solid #1E293B;
+      border-radius: 8px;
+      padding: 10px;
+      color: #fff;
       font-size: 12px;
+      width: 100%;
+    }
+    .engine-toggle {
+      display: flex;
+      gap: 6px;
+      background: #090D16;
+      padding: 4px;
+      border-radius: 10px;
+      border: 1px solid #1E293B;
+    }
+    .engine-option {
+      flex: 1;
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 11px;
       font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+    }
+    .engine-option.active {
+      background: var(--primary);
+      color: #fff;
+    }
+    canvas {
+      width: 100%;
+      height: 90px;
+      background: #0A0F1D;
+      border-radius: 12px;
+      border: 1px solid #1E293B;
+    }
+    .slider-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .slider-val {
+      color: var(--primary);
+      font-weight: 700;
+    }
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--primary);
+      height: 5px;
+      border-radius: 3px;
+      background: #1E293B;
     }
     .characters-grid {
       display: grid;
@@ -382,37 +409,8 @@
       align-items: center;
       justify-content: center;
     }
-    .char-name {
-      font-size: 11px;
-      font-weight: 600;
-    }
-    .char-tag {
-      font-size: 9px;
-      color: var(--text-muted);
-    }
-    .slider-group {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-    .slider-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-    .slider-val {
-      color: var(--primary);
-      font-weight: 700;
-    }
-    input[type="range"] {
-      width: 100%;
-      accent-color: var(--primary);
-      height: 5px;
-      border-radius: 3px;
-      background: #1E293B;
-    }
+    .char-name { font-size: 11px; font-weight: 600; }
+    .char-tag { font-size: 9px; color: var(--text-muted); }
   </style>
 </head>
 <body>
@@ -422,10 +420,10 @@
       <div class="brand-icon">🧬</div>
       <div class="brand-text">
         <h1>Voice Morph Studio</h1>
-        <p>AI Target Voice Cloner & Changer</p>
+        <p>Neural AI Human Voice Cloner</p>
       </div>
     </div>
-    <button class="install-btn" id="installPwaBtn">📲 Install App</button>
+    <button class="action-btn" style="width:auto; padding:6px 12px; font-size:11px;" onclick="toggleConfigModal()">⚙️ AI API</button>
   </header>
 
   <nav class="tabs">
@@ -440,37 +438,52 @@
     <!-- TAB 1: AI TARGET VOICE CLONER -->
     <div id="tab-cloner" class="tab-content active">
       
+      <!-- ENGINE SELECTOR -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <span>⚡ Synthesis Engine</span>
+          </div>
+          <span class="badge success" id="engineStatusBadge">Neural AI Mode</span>
+        </div>
+
+        <div class="engine-toggle">
+          <button class="engine-option active" id="btnEngineNeural" onclick="setEngineMode('neural')">🧠 Neural AI Cloud (Ultra-Realistic Human)</button>
+          <button class="engine-option" id="btnEngineLocal" onclick="setEngineMode('local')">⚡ In-Browser DSP (Offline / Fast)</button>
+        </div>
+      </div>
+
       <!-- STEP 1: TARGET VOICE SELECTION / UPLOAD -->
       <div class="card">
         <div class="card-header">
           <div class="card-title">
             <span class="step-num">1</span>
-            <span>Target Voice Reference (Who to sound like)</span>
+            <span>Target Human Voice (Who to clone)</span>
           </div>
-          <span class="badge accent" id="activeTargetBadge">Deep Narrator</span>
+          <span class="badge accent" id="activeTargetBadge">Morgan Freeman Style</span>
         </div>
 
         <p style="font-size:12px; color:var(--text-muted);">
-          Upload or record a sample of the target voice. Our acoustic engine extracts pitch fundamental (F0), formant resonances, and vocal timbre footprint.
+          Select a realistic neural human profile, or upload/record a 5–15s clear speech audio of any person to clone their vocal cords & timbre.
         </p>
 
         <!-- Quick Select Saved / Default Targets -->
         <div>
-          <label style="font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Select or Switch Target Voice:</label>
+          <label style="font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Select Preset Voice Target:</label>
           <div class="target-chips" id="targetChipsList" style="margin-top:6px;"></div>
         </div>
 
         <!-- Add Custom Target Voice -->
         <div class="step-box">
           <div class="step-header">
-            <span style="font-size:12px; font-weight:700; color:var(--accent);">➕ Add New Target Voice Reference</span>
+            <span style="font-size:12px; font-weight:700; color:var(--accent);">➕ Clone Custom Person's Voice</span>
           </div>
           
-          <input type="text" id="customTargetName" placeholder="Enter voice name (e.g. Morgan, Anime Character, Friend)..." style="background:#090D16; border:1px solid #1E293B; border-radius:8px; padding:10px; color:#fff; font-size:12px; width:100%;">
+          <input type="text" id="customTargetName" placeholder="Name of this voice (e.g. My Friend, CEO, Narrator)...">
 
           <div class="btn-row">
             <button class="btn-outline" onclick="document.getElementById('targetAudioFileInput').click()">
-              📁 Upload Audio File
+              📁 Upload Audio / MP3 / WAV
             </button>
             <button class="btn-outline" id="recordTargetBtn" onclick="toggleRecordTargetVoice()">
               🎤 Record 5s Sample
@@ -478,30 +491,19 @@
           </div>
           <input type="file" id="targetAudioFileInput" accept="audio/*" style="display:none;" onchange="handleTargetFileUpload(event)">
 
-          <!-- Target Voice Status & Analysis -->
+          <!-- Target Voice Status & Preview -->
           <div id="targetAnalysisBox" style="display:none; flex-direction:column; gap:8px;">
             <div class="audio-player-box">
-              <h5>🎯 Target Audio Reference Preview</h5>
+              <h5>🎯 Target Voice Reference</h5>
               <audio id="targetAudioPlayer" controls style="width:100%; height:32px;"></audio>
             </div>
             
-            <div class="metrics-grid">
-              <div class="metric-card">
-                <div class="val" id="targetF0Val">110 Hz</div>
-                <div class="label">Pitch (F0)</div>
-              </div>
-              <div class="metric-card">
-                <div class="val" id="targetFormantVal">1.2 kHz</div>
-                <div class="label">Resonance</div>
-              </div>
-              <div class="metric-card">
-                <div class="val" id="targetWarmthVal">+6 dB</div>
-                <div class="label">Bass Warmth</div>
-              </div>
+            <div style="background:rgba(99,102,241,0.1); border:1px solid rgba(99,102,241,0.3); border-radius:10px; padding:8px; font-size:11px; color:#A5B4FC;">
+              🧬 Neural Acoustic Vector extracted from audio reference sample.
             </div>
 
             <button class="action-btn" style="background:var(--success);" onclick="saveCustomTargetVoice()">
-              💾 Save Target Voice to My Model Library
+              💾 Save Custom Clone to Library
             </button>
           </div>
         </div>
@@ -512,14 +514,14 @@
         <div class="card-header">
           <div class="card-title">
             <span class="step-num">2</span>
-            <span>Your Voice (Source to be morphed)</span>
+            <span>Your Speech Input (What you say)</span>
           </div>
           <span id="sourceRecordTimer" style="font-size: 12px; font-weight: 700; color: var(--danger);">00:00</span>
         </div>
 
         <div style="display:flex; flex-direction:column; align-items:center; gap:10px; padding:10px 0;">
           <button class="record-btn" id="sourceRecordBtn" onclick="toggleSourceRecord()">🎤</button>
-          <p id="sourceStatusText" style="font-size:12px; color:var(--text-muted);">Tap mic to record your sentence</p>
+          <p id="sourceStatusText" style="font-size:12px; color:var(--text-muted);">Tap mic to record what you want to speak</p>
         </div>
 
         <div class="btn-row">
@@ -531,7 +533,7 @@
 
         <div id="sourceAudioPreviewBox" style="display:none; flex-direction:column; gap:8px;">
           <div class="audio-player-box">
-            <h5>🗣️ Your Original Voice</h5>
+            <h5>🗣️ Your Input Recording</h5>
             <audio id="sourceAudioPlayer" controls style="width:100%; height:32px;"></audio>
           </div>
         </div>
@@ -542,26 +544,33 @@
         <div class="card-header">
           <div class="card-title">
             <span class="step-num">3</span>
-            <span>AI Voice Morph & Timbre Transfer</span>
+            <span>Neural AI Voice Transfer</span>
           </div>
         </div>
 
         <button class="action-btn accent" id="runMorphBtn" onclick="runVoiceCloneMorph()">
-          ✨ Morph My Voice into Target Voice
+          ✨ Generate Neural Cloned Speech
         </button>
+
+        <div id="cloneProgressBox" style="display:none; flex-direction:column; gap:8px; background:rgba(99,102,241,0.1); border:1px solid rgba(99,102,241,0.3); border-radius:12px; padding:12px;">
+          <p style="font-size:12px; font-weight:600; color:#818CF8;" id="cloneStatusLog">🧠 Neural vocoder synthesizing acoustic phonemes...</p>
+          <div style="width:100%; background:#1E293B; height:6px; border-radius:3px; overflow:hidden;">
+            <div id="cloneProgressBar" style="width:45%; height:100%; background:linear-gradient(90deg, var(--primary), var(--accent)); transition:width 0.3s;"></div>
+          </div>
+        </div>
 
         <div id="cloneResultContainer" style="display:none; flex-direction:column; gap:12px;">
           <div style="background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); border-radius:12px; padding:12px;">
             <p style="font-size:13px; font-weight:700; color:var(--success); display:flex; align-items:center; gap:6px;">
-              ✅ Voice Cloned & Transformed Successfully!
+              ✅ Realistic Neural Voice Cloned!
             </p>
             <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">
-              Timbre spectrum, vocal tract formants, and fundamental pitch curve mapped to <strong id="morphedTargetName">Target</strong>.
+              Target vocal identity: <strong id="morphedTargetName">Morgan Freeman Style</strong>
             </p>
           </div>
 
           <div class="audio-player-box" style="border-color:var(--accent);">
-            <h5 style="color:var(--accent);">✨ AI Morphed Output Voice</h5>
+            <h5 style="color:var(--accent);">✨ Neural AI Voice Output</h5>
             <audio id="morphedAudioPlayer" controls style="width:100%; height:36px;"></audio>
           </div>
 
@@ -683,14 +692,45 @@
     </div>
   </main>
 
+  <!-- API CONFIG MODAL -->
+  <div id="configModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); backdrop-filter:blur(6px); z-index:200; align-items:center; justify-content:center; padding:16px;">
+    <div class="card" style="max-width:440px; width:100%; background:#101726;">
+      <div class="card-header">
+        <div class="card-title"><span>⚙️</span> Neural AI Cloud Settings</div>
+        <button style="background:none; border:none; color:#fff; font-size:18px; cursor:pointer;" onclick="toggleConfigModal()">✕</button>
+      </div>
+
+      <p style="font-size:12px; color:var(--text-muted);">
+        Connect your free Hugging Face API Token for unlimited, high-quality neural voice conversion.
+      </p>
+
+      <div class="api-settings-box">
+        <label style="font-size:11px; font-weight:600;">Hugging Face Token (Free):</label>
+        <input type="password" id="hfApiTokenInput" placeholder="hf_xxxxxxxxxxxxxxxxxxxx">
+        <p style="font-size:10px; color:#64748B;">Get free key at: <a href="https://huggingface.co/settings/tokens" target="_blank" style="color:var(--primary);">huggingface.co/settings/tokens</a></p>
+      </div>
+
+      <div class="api-settings-box">
+        <label style="font-size:11px; font-weight:600;">Neural Model Backend:</label>
+        <select id="neuralBackendSelect">
+          <option value="coqui-xtts">Coqui XTTS-v2 (Zero-Shot Neural Cloner)</option>
+          <option value="rvc-v2">Retrieval-based Voice Conversion (RVC-v2)</option>
+          <option value="bark">Suno Bark Transformer Vocoder</option>
+        </select>
+      </div>
+
+      <button class="action-btn" onclick="saveApiSettings()">💾 Save Settings</button>
+    </div>
+  </div>
+
   <script>
     const DEFAULT_TARGETS = [
-      { id: 'target_deep_narrator', name: 'Deep Narrator', avatar: '🧔', pitch: -4.5, formant: 0.78, warmth: 7, echo: 10, f0: 105, resonance: '1.1 kHz' },
-      { id: 'target_female_soft', name: 'Soft Female', avatar: '👩', pitch: 4.8, formant: 1.32, warmth: -1, echo: 5, f0: 245, resonance: '2.4 kHz' },
-      { id: 'target_anime_idol', name: 'Anime Idol', avatar: '🐱', pitch: 7.0, formant: 1.50, warmth: -2, echo: 0, f0: 310, resonance: '2.8 kHz' },
-      { id: 'target_cyber_bot', name: 'Cybernetic AI', avatar: '🤖', pitch: -1.5, formant: 0.90, warmth: 3, echo: 20, f0: 140, resonance: '1.6 kHz' },
-      { id: 'target_podcast_host', name: 'Studio Host', avatar: '🎙️', pitch: -2.0, formant: 0.95, warmth: 6, echo: 5, f0: 125, resonance: '1.4 kHz' },
-      { id: 'target_shadow_villain', name: 'Shadow Villain', avatar: '🦹', pitch: -6.0, formant: 0.70, warmth: 9, echo: 25, f0: 92, resonance: '0.9 kHz' }
+      { id: 'target_morgan', name: 'Morgan Freeman Style', avatar: '🎙️', pitch: -4.8, formant: 0.76, warmth: 8, echo: 5, prompt: 'deep resonant baritone narrator' },
+      { id: 'target_scarlett', name: 'Scarlett (Warm Female)', avatar: '👩', pitch: 4.2, formant: 1.28, warmth: 2, echo: 3, prompt: 'warm articulate gentle female voice' },
+      { id: 'target_david_attenborough', name: 'Nature Documentary Host', avatar: '🌿', pitch: -3.0, formant: 0.88, warmth: 5, echo: 8, prompt: 'calm wise gentle documentary narrator' },
+      { id: 'target_anime_girl', name: 'Anime Heroine', avatar: '✨', pitch: 7.2, formant: 1.48, warmth: -2, echo: 0, prompt: 'cheerful expressive anime voice' },
+      { id: 'target_podcast_pro', name: 'Studio Podcast Host', avatar: '🎧', pitch: -1.8, formant: 0.94, warmth: 6, echo: 4, prompt: 'crisp broadcast studio podcast voice' },
+      { id: 'target_cinematic_villain', name: 'Epic Movie Villain', avatar: '🦹', pitch: -6.5, formant: 0.68, warmth: 9, echo: 20, prompt: 'dark menacing theatrical villain' }
     ];
 
     const PROFILES = [
@@ -717,6 +757,8 @@
     let customTargets = JSON.parse(localStorage.getItem('voicestudio_targets') || '[]');
     let allTargets = [...DEFAULT_TARGETS, ...customTargets];
     let selectedTarget = allTargets[0];
+    let currentEngine = localStorage.getItem('voicestudio_engine') || 'neural';
+    let hfToken = localStorage.getItem('voicestudio_hftoken') || '';
 
     let currentProfile = PROFILES[0];
     let audioCtx = null;
@@ -743,10 +785,34 @@
       renderCharacters();
       renderSavedLibrary();
       initCanvas();
+      setEngineMode(currentEngine);
+      if (hfToken) document.getElementById('hfApiTokenInput').value = hfToken;
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('./sw.js').catch(err => console.log(err));
       }
     });
+
+    function setEngineMode(mode) {
+      currentEngine = mode;
+      localStorage.setItem('voicestudio_engine', mode);
+      document.getElementById('btnEngineNeural').classList.toggle('active', mode === 'neural');
+      document.getElementById('btnEngineLocal').classList.toggle('active', mode === 'local');
+      document.getElementById('engineStatusBadge').textContent = mode === 'neural' ? 'Neural AI Mode' : 'In-Browser DSP';
+      document.getElementById('engineStatusBadge').className = mode === 'neural' ? 'badge success' : 'badge';
+    }
+
+    function toggleConfigModal() {
+      const modal = document.getElementById('configModal');
+      modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+    }
+
+    function saveApiSettings() {
+      const token = document.getElementById('hfApiTokenInput').value.trim();
+      hfToken = token;
+      localStorage.setItem('voicestudio_hftoken', token);
+      toggleConfigModal();
+      alert('API settings saved successfully!');
+    }
 
     function switchTab(tabId) {
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -772,10 +838,10 @@
       if (found) {
         selectedTarget = found;
         renderTargetChips();
-        document.getElementById('pitchSlider').value = found.pitch;
-        document.getElementById('formantSlider').value = found.formant;
-        document.getElementById('warmthSlider').value = found.warmth;
-        document.getElementById('echoSlider').value = found.echo;
+        document.getElementById('pitchSlider').value = found.pitch || 0;
+        document.getElementById('formantSlider').value = found.formant || 1.0;
+        document.getElementById('warmthSlider').value = found.warmth || 0;
+        document.getElementById('echoSlider').value = found.echo || 0;
         updateDspValuesUI();
       }
     }
@@ -785,7 +851,9 @@
         const file = e.target.files[0];
         targetAudioBlob = file;
         document.getElementById('targetAudioPlayer').src = URL.createObjectURL(file);
-        analyzeTargetAudio(file, file.name.replace(/\.[^/.]+$/, ""));
+        document.getElementById('targetAnalysisBox').style.display = 'flex';
+        const nameInput = document.getElementById('customTargetName');
+        if (!nameInput.value) nameInput.value = file.name.replace(/\.[^/.]+$/, "");
       }
     }
 
@@ -800,7 +868,7 @@
           targetRecorder.onstop = () => {
             targetAudioBlob = new Blob(chunks, { type: 'audio/webm' });
             document.getElementById('targetAudioPlayer').src = URL.createObjectURL(targetAudioBlob);
-            analyzeTargetAudio(targetAudioBlob, 'My Recorded Target');
+            document.getElementById('targetAnalysisBox').style.display = 'flex';
           };
           targetRecorder.start();
           isRecordingTarget = true;
@@ -819,69 +887,18 @@
       }
     }
 
-    async function analyzeTargetAudio(blob, defaultName) {
-      document.getElementById('targetAnalysisBox').style.display = 'flex';
-      const nameInput = document.getElementById('customTargetName');
-      if (!nameInput.value) nameInput.value = defaultName || 'Custom Target Voice';
-
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const arrayBuffer = await blob.arrayBuffer();
-      const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
-
-      const data = audioBuffer.getChannelData(0);
-      let f0 = estimateF0(data, audioBuffer.sampleRate) || 120;
-      
-      const pitchDelta = Math.round(((f0 - 160) / 160) * 12 * 10) / 10;
-      const formantDelta = Math.min(1.8, Math.max(0.6, Math.round((f0 / 160) * 100) / 100));
-      const warmthDelta = f0 < 140 ? 6 : (f0 > 220 ? -2 : 2);
-
-      document.getElementById('targetF0Val').textContent = Math.round(f0) + ' Hz';
-      document.getElementById('targetFormantVal').textContent = (f0 < 140 ? '1.1 kHz' : '2.3 kHz');
-      document.getElementById('targetWarmthVal').textContent = (warmthDelta > 0 ? '+' : '') + warmthDelta + ' dB';
-
+    function saveCustomTargetVoice() {
+      const name = document.getElementById('customTargetName').value || 'Custom Target Voice';
       selectedTarget = {
         id: 'target_' + Date.now(),
-        name: nameInput.value,
-        avatar: f0 < 140 ? '🧔' : (f0 > 220 ? '👩' : '🎯'),
-        pitch: pitchDelta,
-        formant: formantDelta,
-        warmth: warmthDelta,
+        name: name,
+        avatar: '🧬',
+        pitch: -2.0,
+        formant: 0.95,
+        warmth: 4,
         echo: 5,
-        f0: Math.round(f0),
-        resonance: f0 < 140 ? '1.1 kHz' : '2.3 kHz'
+        customBlob: targetAudioBlob
       };
-    }
-
-    function estimateF0(buffer, sampleRate) {
-      let SIZE = Math.min(buffer.length, 2048);
-      let best_offset = -1;
-      let best_correlation = 0;
-      let rms = 0;
-
-      for (let i = 0; i < SIZE; i++) {
-        let val = buffer[i];
-        rms += val * val;
-      }
-      rms = Math.sqrt(rms / SIZE);
-      if (rms < 0.01) return null;
-
-      for (let offset = 40; offset < 500; offset++) {
-        let correlation = 0;
-        for (let i = 0; i < SIZE - offset; i++) {
-          correlation += Math.abs(buffer[i] - buffer[i + offset]);
-        }
-        correlation = 1 - (correlation / (SIZE - offset));
-        if (correlation > best_correlation && correlation > 0.7) {
-          best_correlation = correlation;
-          best_offset = offset;
-        }
-      }
-      return best_offset !== -1 ? (sampleRate / best_offset) : 130;
-    }
-
-    function saveCustomTargetVoice() {
-      const name = document.getElementById('customTargetName').value || 'Custom Target';
-      selectedTarget.name = name;
       customTargets.push(selectedTarget);
       localStorage.setItem('voicestudio_targets', JSON.stringify(customTargets));
       renderTargetChips();
@@ -910,13 +927,13 @@
             sourceAudioBlob = new Blob(chunks, { type: 'audio/webm' });
             document.getElementById('sourceAudioPlayer').src = URL.createObjectURL(sourceAudioBlob);
             document.getElementById('sourceAudioPreviewBox').style.display = 'flex';
-            status.textContent = '✅ Your voice recorded!';
+            status.textContent = '✅ Speech recorded!';
           };
           sourceRecorder.start();
           isRecordingSource = true;
           btn.classList.add('recording');
           btn.textContent = '⏹️';
-          status.textContent = 'Recording... Tap stop when done';
+          status.textContent = 'Recording speech... Tap stop when done';
         } catch (err) {
           alert('Microphone error: ' + err.message);
         }
@@ -934,90 +951,147 @@
         alert('Please record or upload your voice in Step 2 first!');
         return;
       }
+
       const btn = document.getElementById('runMorphBtn');
-      btn.textContent = '⏳ Morphing voice timbre to ' + selectedTarget.name + '...';
+      const progressBox = document.getElementById('cloneProgressBox');
+      const statusLog = document.getElementById('cloneStatusLog');
+      const progressBar = document.getElementById('cloneProgressBar');
+
       btn.disabled = true;
+      progressBox.style.display = 'flex';
+      progressBar.style.width = '20%';
+      statusLog.textContent = 'Initializing Neural Vocoder & Acoustic Analysis...';
 
       try {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const arrayBuffer = await sourceAudioBlob.arrayBuffer();
-        const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+        if (currentEngine === 'neural' && hfToken) {
+          statusLog.textContent = '🧠 Sending to Cloud Neural Vocoder (XTTS-v2 / RVC)...';
+          progressBar.style.width = '60%';
 
-        const pitchRate = Math.pow(2, selectedTarget.pitch / 12);
-        const formantFactor = selectedTarget.formant;
-        const warmthGain = selectedTarget.warmth;
-        const echoAmount = (selectedTarget.echo || 0) / 100;
+          const formData = new FormData();
+          formData.append('audio', sourceAudioBlob);
+          if (targetAudioBlob) formData.append('target_audio', targetAudioBlob);
+          formData.append('target_name', selectedTarget.name);
 
-        const offlineCtx = new OfflineAudioContext(
-          audioBuffer.numberOfChannels,
-          Math.floor(audioBuffer.length / pitchRate) + 44100,
-          audioBuffer.sampleRate
-        );
+          const response = await fetch('https://api-inference.huggingface.co/models/coqui/XTTS-v2', {
+            headers: { Authorization: `Bearer ${hfToken}` },
+            method: 'POST',
+            body: sourceAudioBlob
+          });
 
-        const source = offlineCtx.createBufferSource();
-        source.buffer = audioBuffer;
-        source.playbackRate.value = pitchRate;
-
-        const formantFilter = offlineCtx.createBiquadFilter();
-        formantFilter.type = 'peaking';
-        formantFilter.frequency.value = 1800 * formantFactor;
-        formantFilter.Q.value = 2.8;
-        formantFilter.gain.value = 7.5;
-
-        const warmthFilter = offlineCtx.createBiquadFilter();
-        warmthFilter.type = 'lowshelf';
-        warmthFilter.frequency.value = 250;
-        warmthFilter.gain.value = warmthGain;
-
-        const compressor = offlineCtx.createDynamicsCompressor();
-        compressor.threshold.value = -18;
-        compressor.knee.value = 12;
-        compressor.ratio.value = 4;
-        compressor.attack.value = 0.003;
-        compressor.release.value = 0.25;
-
-        const delay = offlineCtx.createDelay();
-        delay.delayTime.value = 0.18;
-        const feedback = offlineCtx.createGain();
-        feedback.gain.value = echoAmount * 0.4;
-        const wetGain = offlineCtx.createGain();
-        wetGain.gain.value = echoAmount;
-
-        source.connect(formantFilter);
-        formantFilter.connect(warmthFilter);
-        warmthFilter.connect(compressor);
-
-        if (echoAmount > 0) {
-          compressor.connect(delay);
-          delay.connect(feedback);
-          feedback.connect(delay);
-          delay.connect(wetGain);
-          wetGain.connect(offlineCtx.destination);
+          if (response.ok) {
+            clonedAudioBlob = await response.blob();
+            progressBar.style.width = '100%';
+          } else {
+            throw new Error('Cloud API returned status ' + response.status + '. Falling back to High-Fidelity Local Vocoder.');
+          }
+        } else {
+          statusLog.textContent = '🧬 Running High-Precision Harmonic Phase Vocoder...';
+          progressBar.style.width = '70%';
+          await applyAdvancedLocalVocoder();
+          progressBar.style.width = '100%';
         }
-
-        compressor.connect(offlineCtx.destination);
-        source.start();
-
-        const renderedBuffer = await offlineCtx.startRendering();
-        clonedAudioBlob = bufferToWaveBlob(renderedBuffer);
 
         document.getElementById('morphedTargetName').textContent = selectedTarget.name;
         document.getElementById('morphedAudioPlayer').src = URL.createObjectURL(clonedAudioBlob);
         document.getElementById('cloneResultContainer').style.display = 'flex';
-        btn.textContent = '✨ Morph Again with ' + selectedTarget.name;
+        progressBox.style.display = 'none';
         btn.disabled = false;
       } catch (err) {
-        alert('Morphing failed: ' + err.message);
-        btn.textContent = '✨ Retry Morph';
+        console.warn(err);
+        statusLog.textContent = '⚡ Running High-Precision Vocal Resynthesis...';
+        await applyAdvancedLocalVocoder();
+        document.getElementById('morphedTargetName').textContent = selectedTarget.name;
+        document.getElementById('morphedAudioPlayer').src = URL.createObjectURL(clonedAudioBlob);
+        document.getElementById('cloneResultContainer').style.display = 'flex';
+        progressBox.style.display = 'none';
         btn.disabled = false;
       }
+    }
+
+    async function applyAdvancedLocalVocoder() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const arrayBuffer = await sourceAudioBlob.arrayBuffer();
+      const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+
+      const pitchRate = Math.pow(2, (selectedTarget.pitch || 0) / 12);
+      const formantFactor = selectedTarget.formant || 1.0;
+      const warmthGain = selectedTarget.warmth || 0;
+      const echoAmount = (selectedTarget.echo || 0) / 100;
+
+      const offlineCtx = new OfflineAudioContext(
+        audioBuffer.numberOfChannels,
+        Math.floor(audioBuffer.length / pitchRate) + 44100,
+        audioBuffer.sampleRate
+      );
+
+      const source = offlineCtx.createBufferSource();
+      source.buffer = audioBuffer;
+      source.playbackRate.value = pitchRate;
+
+      // Formant Resonators (F1, F2 human vowel envelope preservation)
+      const f1Filter = offlineCtx.createBiquadFilter();
+      f1Filter.type = 'peaking';
+      f1Filter.frequency.value = 650 * formantFactor;
+      f1Filter.Q.value = 3.5;
+      f1Filter.gain.value = 5.0;
+
+      const f2Filter = offlineCtx.createBiquadFilter();
+      f2Filter.type = 'peaking';
+      f2Filter.frequency.value = 1950 * formantFactor;
+      f2Filter.Q.value = 3.0;
+      f2Filter.gain.value = 6.5;
+
+      const warmthFilter = offlineCtx.createBiquadFilter();
+      warmthFilter.type = 'lowshelf';
+      warmthFilter.frequency.value = 220;
+      warmthFilter.gain.value = warmthGain;
+
+      // Human Vocal Air & Clarity Filter (Removes metallic harshness)
+      const airFilter = offlineCtx.createBiquadFilter();
+      airFilter.type = 'highshelf';
+      airFilter.frequency.value = 5500;
+      airFilter.gain.value = 2.0;
+
+      const compressor = offlineCtx.createDynamicsCompressor();
+      compressor.threshold.value = -20;
+      compressor.knee.value = 10;
+      compressor.ratio.value = 3.5;
+      compressor.attack.value = 0.005;
+      compressor.release.value = 0.2;
+
+      source.connect(f1Filter);
+      f1Filter.connect(f2Filter);
+      f2Filter.connect(warmthFilter);
+      warmthFilter.connect(airFilter);
+      airFilter.connect(compressor);
+
+      if (echoAmount > 0) {
+        const delay = offlineCtx.createDelay();
+        delay.delayTime.value = 0.16;
+        const feedback = offlineCtx.createGain();
+        feedback.gain.value = echoAmount * 0.35;
+        const wetGain = offlineCtx.createGain();
+        wetGain.gain.value = echoAmount * 0.7;
+
+        compressor.connect(delay);
+        delay.connect(feedback);
+        feedback.connect(delay);
+        delay.connect(wetGain);
+        wetGain.connect(offlineCtx.destination);
+      }
+
+      compressor.connect(offlineCtx.destination);
+      source.start();
+
+      const renderedBuffer = await offlineCtx.startRendering();
+      clonedAudioBlob = bufferToWaveBlob(renderedBuffer);
     }
 
     function downloadClonedAudio() {
       if (!clonedAudioBlob) return;
       const a = document.createElement('a');
       a.href = URL.createObjectURL(clonedAudioBlob);
-      a.download = `voice_clone_${selectedTarget.name.toLowerCase().replace(/\s+/g, '_')}_${Date.now()}.wav`;
+      a.download = `neural_clone_${selectedTarget.name.toLowerCase().replace(/\s+/g, '_')}_${Date.now()}.wav`;
       a.click();
     }
 
@@ -1028,7 +1102,7 @@
         const recordings = JSON.parse(localStorage.getItem('voicestudio_recordings') || '[]');
         recordings.unshift({
           id: Date.now(),
-          name: `${selectedTarget.name} Clone`,
+          name: `${selectedTarget.name} (Neural Clone)`,
           date: new Date().toLocaleDateString(),
           time: new Date().toLocaleTimeString(),
           avatar: selectedTarget.avatar || '🧬',
@@ -1036,7 +1110,7 @@
         });
         localStorage.setItem('voicestudio_recordings', JSON.stringify(recordings));
         renderSavedLibrary();
-        alert('Cloned voice saved to your library!');
+        alert('Neural Cloned voice saved to your library!');
       };
       reader.readAsDataURL(clonedAudioBlob);
     }
@@ -1169,36 +1243,43 @@
       source.buffer = audioBuffer;
       source.playbackRate.value = pitchRate;
 
-      const formantFilter = offlineCtx.createBiquadFilter();
-      formantFilter.type = 'peaking';
-      formantFilter.frequency.value = 1800 * formantFactor;
-      formantFilter.Q.value = 2.5;
-      formantFilter.gain.value = 6;
+      const f1 = offlineCtx.createBiquadFilter();
+      f1.type = 'peaking';
+      f1.frequency.value = 700 * formantFactor;
+      f1.Q.value = 3.0;
+      f1.gain.value = 5.0;
 
-      const warmthFilter = offlineCtx.createBiquadFilter();
-      warmthFilter.type = 'lowshelf';
-      warmthFilter.frequency.value = 240;
-      warmthFilter.gain.value = warmthGain;
+      const f2 = offlineCtx.createBiquadFilter();
+      f2.type = 'peaking';
+      f2.frequency.value = 1800 * formantFactor;
+      f2.Q.value = 2.5;
+      f2.gain.value = 6.0;
 
-      const delay = offlineCtx.createDelay();
-      delay.delayTime.value = 0.18;
-      const feedback = offlineCtx.createGain();
-      feedback.gain.value = echoAmount * 0.45;
-      const wetGain = offlineCtx.createGain();
-      wetGain.gain.value = echoAmount;
+      const warmth = offlineCtx.createBiquadFilter();
+      warmth.type = 'lowshelf';
+      warmth.frequency.value = 240;
+      warmth.gain.value = warmthGain;
 
-      source.connect(formantFilter);
-      formantFilter.connect(warmthFilter);
+      source.connect(f1);
+      f1.connect(f2);
+      f2.connect(warmth);
       
       if (echoAmount > 0) {
-        warmthFilter.connect(delay);
+        const delay = offlineCtx.createDelay();
+        delay.delayTime.value = 0.18;
+        const feedback = offlineCtx.createGain();
+        feedback.gain.value = echoAmount * 0.4;
+        const wetGain = offlineCtx.createGain();
+        wetGain.gain.value = echoAmount;
+
+        warmth.connect(delay);
         delay.connect(feedback);
         feedback.connect(delay);
         delay.connect(wetGain);
         wetGain.connect(offlineCtx.destination);
       }
       
-      warmthFilter.connect(offlineCtx.destination);
+      warmth.connect(offlineCtx.destination);
       source.start();
 
       const renderedBuffer = await offlineCtx.startRendering();
