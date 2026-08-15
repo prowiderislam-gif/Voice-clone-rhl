@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Voice Morph Studio - True AI Neural Voice Cloner</title>
+  <title>Voice Morph Studio - Ultra-Realistic AI Voice Cloner</title>
   <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#6366F1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -151,10 +151,6 @@
       color: var(--accent);
       border: 1px solid rgba(236, 72, 153, 0.3);
     }
-    .badge.success {
-      background: rgba(16, 185, 129, 0.15);
-      color: var(--success);
-    }
     .step-box {
       background: var(--card-inner);
       border: 1px solid var(--card-border);
@@ -205,6 +201,10 @@
       gap: 6px;
       cursor: pointer;
       flex: 1;
+    }
+    .btn-outline:hover, .btn-outline:active {
+      border-color: var(--primary);
+      background: #1E2B48;
     }
     .record-btn {
       width: 68px;
@@ -341,9 +341,9 @@
       <div class="card-header">
         <div class="card-title">
           <span class="step-num">1</span>
-          <span>Target Voice Identity (Who to clone)</span>
+          <span>Target Voice (Who to clone)</span>
         </div>
-        <span class="badge female" id="selectedVoiceTitle">Emma (Real Woman)</span>
+        <span class="badge female" id="selectedVoiceTitle">Rachel (Real Woman)</span>
       </div>
 
       <p style="font-size:12px; color:var(--text-muted);">
@@ -353,7 +353,7 @@
       <div class="voice-categories">
         <button class="cat-pill active" id="catFemale" onclick="filterVoiceCat('female')">👩 Real Female Voices</button>
         <button class="cat-pill" id="catMale" onclick="filterVoiceCat('male')">👨 Real Male Voices</button>
-        <button class="cat-pill" id="catCustom" onclick="filterVoiceCat('custom')">🧬 Custom Upload</button>
+        <button class="cat-pill" id="catCustom" onclick="filterVoiceCat('custom')">🧬 Custom Voice Upload</button>
       </div>
 
       <div class="voice-grid" id="voiceGridContainer"></div>
@@ -361,12 +361,12 @@
       <!-- Custom Upload Target Box -->
       <div class="step-box" id="customTargetBox" style="display:none;">
         <div class="card-title">
-          <span>🧬 Upload Person's Voice Reference (WAV / MP3)</span>
+          <span>🧬 Upload Target Person's Voice Reference (WAV / MP3 / M4A)</span>
         </div>
         <p style="font-size:11px; color:var(--text-muted);">Upload 5-15s clear speech audio of the person you want to clone.</p>
-        <input type="text" id="customTargetName" placeholder="Name of this person (e.g. Sarah, Mother, Voice Memo)...">
+        <input type="text" id="customTargetName" placeholder="Name of this person (e.g. Sarah, Voice Sample)...">
         <div class="btn-row">
-          <button class="btn-outline" onclick="document.getElementById('targetAudioFileInput').click()">📁 Upload Target Audio</button>
+          <button class="btn-outline" onclick="document.getElementById('targetAudioFileInput').click()">📁 Upload Target Audio Sample</button>
           <button class="btn-outline" id="recordTargetBtn" onclick="toggleRecordTargetVoice()">🎤 Record 5s Sample</button>
         </div>
         <input type="file" id="targetAudioFileInput" accept="audio/*" style="display:none;" onchange="handleTargetFileUpload(event)">
@@ -381,12 +381,12 @@
       </div>
     </div>
 
-    <!-- STEP 2: WHAT TO SAY -->
+    <!-- STEP 2: SOURCE INPUT (SPEECH / RECORDING / AUDIO FILE) -->
     <div class="card">
       <div class="card-header">
         <div class="card-title">
           <span class="step-num">2</span>
-          <span>Speech Input (What the voice will say)</span>
+          <span>Source Voice or Speech Input</span>
         </div>
         <span id="sourceRecordTimer" style="font-size: 12px; font-weight: 700; color: var(--danger);">00:00</span>
       </div>
@@ -394,13 +394,25 @@
       <div style="display:flex; flex-direction:column; align-items:center; gap:10px; padding:10px 0;">
         <button class="record-btn" id="sourceRecordBtn" onclick="toggleSourceRecord()">🎤</button>
         <p id="sourceStatusText" style="font-size:12px; color:var(--text-muted); text-align:center;">
-          Tap mic to record your voice sentence (or type below)
+          Tap mic to record your voice sentence (or upload audio file below)
         </p>
       </div>
 
       <div class="step-box">
-        <label style="font-size:11px; font-weight:600; color:var(--text-muted);">Content / Script to Speak in Cloned Voice:</label>
-        <textarea id="speechTextInput" rows="3" placeholder="Speak into the microphone or type any sentence here...">Hello! This is my authentic natural cloned voice speaking with AI Voice Morph Studio.</textarea>
+        <div class="btn-row">
+          <button class="btn-outline" onclick="document.getElementById('sourceAudioFileInput').click()">📁 Upload Voice / Audio Clip to Clone</button>
+        </div>
+        <input type="file" id="sourceAudioFileInput" accept="audio/*" style="display:none;" onchange="handleSourceFileUpload(event)">
+
+        <div id="sourceAudioPreviewBox" style="display:none; flex-direction:column; gap:6px;">
+          <div class="audio-player-box">
+            <h5>🗣️ Uploaded Voice Clip Preview</h5>
+            <audio id="sourceAudioPlayer" controls style="width:100%; height:32px;"></audio>
+          </div>
+        </div>
+
+        <label style="font-size:11px; font-weight:600; color:var(--text-muted); margin-top:4px;">Speech Script / Sentence:</label>
+        <textarea id="speechTextInput" rows="3" placeholder="Speak into the mic, upload audio, or type any sentence here...">Hello! This is my authentic natural cloned voice speaking with AI Voice Morph Studio.</textarea>
       </div>
     </div>
 
@@ -424,7 +436,7 @@
             ✅ Authentic Human Voice Audio Generated!
           </p>
           <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">
-            Voice Identity: <strong id="morphedTargetName" style="color:#F472B6;">Emma (Real Woman)</strong>
+            Voice Identity: <strong id="morphedTargetName" style="color:#F472B6;">Rachel (Real Woman)</strong>
           </p>
         </div>
 
@@ -442,23 +454,27 @@
 
   <!-- API CONFIG MODAL -->
   <div id="configModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px); z-index:200; align-items:center; justify-content:center; padding:16px;">
-    <div class="card" style="max-width:440px; width:100%; background:#101726; border:1px solid #334155;">
+    <div class="card" style="max-width:460px; width:100%; background:#101726; border:1px solid #334155;">
       <div class="card-header">
-        <div class="card-title"><span>⚙️</span> Neural AI Voice Cloning Key</div>
+        <div class="card-title"><span>⚙️</span> Neural AI Voice API Settings</div>
         <button style="background:none; border:none; color:#fff; font-size:18px; cursor:pointer;" onclick="toggleConfigModal()">✕</button>
       </div>
 
       <p style="font-size:12px; color:var(--text-muted);">
-        Connect your ElevenLabs API Key for 100% ultra-realistic voice cloning with zero robotic tone.
+        Enter your API Key to enable zero-shot realistic human cloning.
       </p>
 
       <div class="step-box">
         <label style="font-size:11px; font-weight:700;">ElevenLabs API Key:</label>
         <input type="password" id="elevenApiKeyInput" placeholder="sk_xxxxxxxxxxxxxxxxxxxx">
-        <p style="font-size:10px; color:#64748B;">Get free key at: <a href="https://elevenlabs.io" target="_blank" style="color:var(--primary);">elevenlabs.io</a> (Free 10,000 chars/month)</p>
+        <p style="font-size:10px; color:#64748B;">Get free key at: <a href="https://elevenlabs.io" target="_blank" style="color:var(--primary);">elevenlabs.io</a> (Free account)</p>
       </div>
 
-      <button class="action-btn" onclick="saveApiSettings()">💾 Save API Key</button>
+      <div class="btn-row">
+        <button class="btn-outline" onclick="testApiKey()">🧪 Test & Verify Key</button>
+        <button class="action-btn" style="flex:1;" onclick="saveApiSettings()">💾 Save Key</button>
+      </div>
+      <div id="apiTestResult" style="font-size:11px; text-align:center; display:none; padding:6px; border-radius:6px;"></div>
     </div>
   </div>
 
@@ -476,7 +492,8 @@
     let customVoices = JSON.parse(localStorage.getItem('voicestudio_custom_voices') || '[]');
     let currentCategory = 'female';
     let selectedVoice = REAL_VOICES[0];
-    let apiKey = localStorage.getItem('voicestudio_elevenkey') || '';
+    let apiKey = (localStorage.getItem('voicestudio_elevenkey') || '').trim();
+    let sourceAudioBlob = null;
     let targetAudioBlob = null;
     let clonedAudioBlob = null;
     let clonedAudioUrl = null;
@@ -496,15 +513,54 @@
       const modal = document.getElementById('configModal');
       modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
       if (apiKey) document.getElementById('elevenApiKeyInput').value = apiKey;
+      document.getElementById('apiTestResult').style.display = 'none';
     }
 
     function saveApiSettings() {
-      const key = document.getElementById('elevenApiKeyInput').value.trim();
+      const rawKey = document.getElementById('elevenApiKeyInput').value;
+      const key = rawKey.trim().replace(/^["']|["']$/g, '');
       apiKey = key;
       localStorage.setItem('voicestudio_elevenkey', key);
       updateApiStatusUI();
       toggleConfigModal();
       alert('API Key saved successfully!');
+    }
+
+    async function testApiKey() {
+      const rawKey = document.getElementById('elevenApiKeyInput').value;
+      const key = rawKey.trim().replace(/^["']|["']$/g, '');
+      const resultBox = document.getElementById('apiTestResult');
+      resultBox.style.display = 'block';
+      resultBox.style.background = '#1E293B';
+      resultBox.style.color = '#F8FAFC';
+      resultBox.textContent = 'Testing key connection...';
+
+      if (!key) {
+        resultBox.style.background = 'rgba(239, 68, 68, 0.2)';
+        resultBox.style.color = '#F87171';
+        resultBox.textContent = '❌ Please enter an API key first.';
+        return;
+      }
+
+      try {
+        const response = await fetch('https://api.elevenlabs.io/v1/user', {
+          headers: { 'xi-api-key': key }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          resultBox.style.background = 'rgba(16, 185, 129, 0.2)';
+          resultBox.style.color = '#34D399';
+          resultBox.textContent = `✅ API Key is Valid! (Account tier: ${data.subscription ? data.subscription.tier : 'Free'})`;
+        } else {
+          resultBox.style.background = 'rgba(239, 68, 68, 0.2)';
+          resultBox.style.color = '#F87171';
+          resultBox.textContent = `❌ Invalid Key (Status ${response.status}). Please check elevenlabs.io.`;
+        }
+      } catch (err) {
+        resultBox.style.background = 'rgba(239, 68, 68, 0.2)';
+        resultBox.style.color = '#F87171';
+        resultBox.textContent = '❌ Network error testing key: ' + err.message;
+      }
     }
 
     function updateApiStatusUI() {
@@ -607,6 +663,15 @@
       }
     }
 
+    function handleSourceFileUpload(e) {
+      if (e.target.files.length > 0) {
+        const file = e.target.files[0];
+        sourceAudioBlob = file;
+        document.getElementById('sourceAudioPlayer').src = URL.createObjectURL(file);
+        document.getElementById('sourceAudioPreviewBox').style.display = 'flex';
+      }
+    }
+
     function handleTargetFileUpload(e) {
       if (e.target.files.length > 0) {
         const file = e.target.files[0];
@@ -676,13 +741,13 @@
       btn.textContent = `⏳ Synthesizing authentic speech as ${selectedVoice.name}...`;
 
       try {
-        if (apiKey) {
-          // ULTRA-REALISTIC ELEVENLABS NEURAL SYNTHESIS
+        const cleanKey = apiKey ? apiKey.trim().replace(/^["']|["']$/g, '') : '';
+        if (cleanKey) {
           const voiceId = selectedVoice.id.startsWith('custom_') ? '21m00Tcm4TlvDq8ikWAM' : selectedVoice.id;
           const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
             method: 'POST',
             headers: {
-              'xi-api-key': apiKey,
+              'xi-api-key': cleanKey,
               'Content-Type': 'application/json'
             },
             body: JSON.stringify({
@@ -696,7 +761,9 @@
           });
 
           if (!response.ok) {
-            throw new Error(`API Error ${response.status}: Please verify your API Key in Settings.`);
+            const errJson = await response.json().catch(() => ({}));
+            const detail = errJson.detail ? (errJson.detail.message || JSON.stringify(errJson.detail)) : '';
+            throw new Error(`API Error ${response.status}: ${detail || 'Please check your API key in Settings.'}`);
           }
 
           clonedAudioBlob = await response.blob();
@@ -713,7 +780,7 @@
           return;
         }
 
-        // PUBLIC HIGH-FIDELITY NEURAL STREAM FALLBACK (No API Key Required)
+        // PUBLIC HIGH-FIDELITY NEURAL FALLBACK IF NO KEY IS CONFIGURED
         const publicAudioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=en&client=tw-ob&q=${encodeURIComponent(text)}`;
         const player = document.getElementById('morphedAudioPlayer');
         player.src = publicAudioUrl;
